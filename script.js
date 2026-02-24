@@ -1,4 +1,5 @@
 window.downloadPDF = function() {
+	 window.print();
     const originalElement = document.getElementById('pdf-content');
     if (!originalElement) return;
     
