@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Page Generator · Northern University Bangladesh</title>
+    <!-- Font Awesome for Facebook icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- html2pdf library for direct PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -8px rgba(0,20,50,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: #0b2d5c;
+            padding: 1.5rem 2rem;
+        }
+        .header h2 {
+            color: white;
+            font-weight: 600;
+            font-size: 1.7rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .header h2 span {
+            background: #ffcd1f;
+            color: #0b2d5c;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-group {
+            flex: 1 1 200px;
+            min-width: 0;
+        }
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            background: white;
+            box-sizing: border-box;
+            transition: 0.15s;
+        }
+        input:focus, select:focus {
+            border-color: #0b2d5c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(11,45,92,0.15);
+        }
+        .btn {
+            background: #0b2d5c;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            background: #15427c;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b2d5c;
+            border-left: 6px solid #ffcd1f;
+            padding-left: 1rem;
+            margin: 1.8rem 0 1.2rem 0;
+        }
+        /* modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.hidden {
+            display: none;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            width: 800px;
+            max-width: 96%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h2 {
+            font-weight: 600;
+            color: #0b2d5c;
+            font-size: 1.4rem;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #5e6f8d;
+        }
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: 60vh;
+            background: white;
+        }
+        .preview-container {
+            max-width: 650px;
+            margin: 0 auto;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .logo-img {
+            height: 100px;
+            width: auto;
+            display: block;
+        }
+        .header-text {
+            flex: 1;
+            text-align: center;
+        }
+        .preview-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0a2b55;
+            margin: 0 0 0.2rem 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: 'SimSun', 'Times New Roman', serif;
+            line-height: 1.2;
+        }
+        .slogan {
+            font-size: 1rem;
+            color: #0b2d5c;
+            font-style: italic;
+            margin: 0.25rem 0 0.5rem 0;
+        }
+        .preview-subtitle {
+            font-size: 1.1rem;
+            color: #2d374b;
+            border-bottom: 2px solid #ffcd1f;
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-top: 0.25rem;
+        }
+        .preview-topic {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .preview-topic-title {
+            font-size: 1.5rem;
+            color: #0b2d5c;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .preview-topic-text {
+            font-style: italic;
+            font-size: 1.2rem;
+            border: 2px dashed #0b2d5c;
+            padding: 0.8rem;
+            background: #faf9fe;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .info-section {
+            border: 2px solid #0b2d5c;
+            padding: 1.2rem;
+            border-radius: 16px;
+            background: #fbfdff;
+        }
+        .info-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            border-bottom: 1px solid #adb9d1;
+            padding-bottom: 0.2rem;
+            color: #0b2d5c;
+        }
+        .info-item {
+            margin-bottom: 0.3rem;
+            font-size: 0.98rem;
+        }
+        .info-label {
+            font-weight: 700;
+            display: inline-block;
+            min-width: 70px;
+        }
+        .submit-date {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 1.5rem;
+        }
+        .hidden {
+            display: none;
+        }
+        hr {
+            border: 0;
+            border-top: 2px solid #ffcd1f;
+            margin: 0.5rem 0;
+        }
+        small {
+            color: #5f6c86;
+            font-size: 0.7rem;
+        }
+        .modal-footer {
+            padding: 1rem 2rem 1.5rem;
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h2>📄 Cover page generator <span>NUB</span></h2>
+        </div>
+        <div class="content">
+            <!-- faculty + department dropdowns (updated per your image) -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📁 Document type</label>
+                    <select id="docType" onchange="updateLabels()">
+                        <option value="Lab Report" selected>Lab Report</option>
+                        <option value="Assignment">Assignment</option>
+                        <option value="Project Report">Project Report</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏛️ Faculty</label>
+                    <select id="facultySelect">
+                        <option value="">-- select faculty --</option>
+                        <option value="science_engineering">Faculty of Science & Engineering</option>
+                        <option value="business">Faculty of Business</option>
+                        <option value="humanities">Faculty of Humanities & Social Science</option>
+                        <option value="law">Faculty of Law</option>
+                        <option value="health_science">Faculty of Health Science</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>📚 Department</label>
+                    <select id="deptSelect" disabled>
+                        <option value="">-- first select faculty --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- course info -->
+            <div class="section-title">📘 Course information</div>
+            <div class="form-row">
+                <div class="form-group"><label>Course code</label><input type="text" id="courseCode" placeholder="ME 1234"></div>
+                <div class="form-group"><label>Course title</label><input type="text" id="courseTitle" placeholder="Machine Design 1"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label id="reportLabel">Experiment No.</label>
+                    <input type="number" id="reportNo" placeholder="02">
+                </div>
+                <div class="form-group">
+                    <label>Submission date</label>
+                    <input type="date" id="submissionDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label id="topicLabel">Experiment Name</label>
+                <input type="text" id="topic" placeholder="Write your Experiment Name">
+            </div>
+
+            <!-- to / by -->
+            <div class="form-row" style="gap: 2rem;">
+                <div class="form-group" style="flex:1;">
+                    <h3 style="color:#0b2d5c; margin:0 0 1rem 0;">👩‍🏫 Submitted to</h3>
+                    <input type="text" id="teacherName" placeholder="Teacher name">
+                    <input type="text" id="teacherDesig" placeholder="Designation" style="margin-top:0.8rem;">
+                    <input type="text" id="teacherDept" placeholder="Department" style="margin-top:0.8rem;">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <h3 style="color:#0b2d5c; margin:0 0 1rem 0;">🧑‍🎓 Submitted by</h3>
+                    <input type="text" id="studentName" placeholder="Student name">
+                    <input type="number" id="studentId" placeholder="Student ID" style="margin-top:0.8rem;">
+                    <div class="form-row" style="margin-top:0.8rem; gap:0.8rem;">
+                        <div style="flex:1;"><input type="number" id="batch" placeholder="Batch"></div>
+                        <div style="flex:1;"><input type="text" id="section" placeholder="Section"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" style="width:100%; margin-top:2rem;" onclick="generatePreview()">⚡ PREVIEW COVER PAGE</button>
+        </div>
+    </div>
+</div>
+
+<!-- preview modal -->
+<div id="previewModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📋 Cover preview</h2>
+            <button class="close-btn" onclick="closePreview()">×</button>
+        </div>
+        <div class="modal-body">
+            <div id="pdf-content" class="preview-container"></div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- Facebook section – stays on screen but won't be in PDF -->
+            <div>
+                <a href="https://www.facebook.com/share/1DfoVNg4ev/" target="_blank" style="text-decoration: none; color: #0b2d5c; font-weight: 500;">
+                    <i class="fab fa-facebook" style="font-size: 1.5rem; margin-right: 0.3rem;"></i> Facebook
+                </a>
+            </div>
+            <div>
+                <button class="btn" style="background:#64748b;" onclick="closePreview()">Close</button>
+                <button class="btn" style="background:#ffcd1f; color:#0b2d5c;" onclick="downloadPDF()">⬇️ Download PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Department data from your image
+    const allDepartments = [
+        // Faculty of Science & Engineering
+        {"name":"Department of Computer Science & Engineering", "facultyId":"science_engineering", "id":"cse"},
+        {"name":"Department of Electrical and Electronic Engineering", "facultyId":"science_engineering", "id":"eee"},
+        {"name":"Department of Textile Engineering", "facultyId":"science_engineering", "id":"textile"},
+        {"name":"Department of Mechanical Engineering", "facultyId":"science_engineering", "id":"me"},
+        {"name":"Department of Civil Engineering", "facultyId":"science_engineering", "id":"ce"},
+        // Faculty of Business
+        {"name":"Department of Business Administration", "facultyId":"business", "id":"ba"},
+        // Faculty of Humanities & Social Science
+        {"name":"Department of Bangla", "facultyId":"humanities", "id":"bangla"},
+        {"name":"Department of English Language & Literature", "facultyId":"humanities", "id":"english"},
+        {"name":"Department of General Education", "facultyId":"humanities", "id":"gened"},
+        {"name":"Department of Governance and Public Policy", "facultyId":"humanities", "id":"gpp"},
+        // Faculty of Law
+        {"name":"Department of Law", "facultyId":"law", "id":"law"},
+        // Faculty of Health Science
+        {"name":"Department of Pharmacy", "facultyId":"health_science", "id":"pharmacy"},
+        {"name":"Department of Public Health", "facultyId":"health_science", "id":"public_health"}
+    ];
+
+    const facultySelect = document.getElementById('facultySelect');
+    const deptSelect = document.getElementById('deptSelect');
+    const reportLabel = document.getElementById('reportLabel');
+    const topicLabel = document.getElementById('topicLabel');
+    const topicInput = document.getElementById('topic');
+
+    function updateDepartments() {
+        const facultyId = facultySelect.value;
+        deptSelect.innerHTML = '<option value="">Select Department...</option>';
+        if (!facultyId) {
+            deptSelect.disabled = true;
+            return;
+        }
+        const filtered = allDepartments.filter(d => d.facultyId === facultyId);
+        filtered.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = d.name;
+            deptSelect.appendChild(opt);
+        });
+        deptSelect.disabled = (filtered.length === 0);
+    }
+    facultySelect.addEventListener('change', updateDepartments);
+    updateDepartments();
+
+    // Set today's date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('submissionDate').value = today;
+
+    window.updateLabels = function() {
+        const type = document.getElementById('docType').value;
+        if (type === 'Lab Report') {
+            reportLabel.textContent = 'Experiment No.';
+            topicLabel.textContent = 'Experiment Name';
+            topicInput.placeholder = 'Write your Experiment Name';
+        } else if (type === 'Assignment') {
+            reportLabel.textContent = 'Assignment No.';
+            topicLabel.textContent = 'Assignment Name';
+            topicInput.placeholder = 'Write your Assignment Name';
+        } else {
+            reportLabel.textContent = 'Report No.';
+            topicLabel.textContent = 'Topic';
+            topicInput.placeholder = 'Write your Topic';
+        }
+    };
+    updateLabels();
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '___________';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '___________';
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    window.generatePreview = function() {
+        const docType = document.getElementById('docType').value;
+        const courseCode = document.getElementById('courseCode').value || '__________';
+        const courseTitle = document.getElementById('courseTitle').value || '__________';
+        const reportNo = document.getElementById('reportNo').value || '—';
+        const topic = document.getElementById('topic').value || 'Topic not specified';
+        const teacherName = document.getElementById('teacherName').value || '_________________';
+        const teacherDesig = document.getElementById('teacherDesig').value || '_________________';
+        const teacherDept = document.getElementById('teacherDept').value || '_________________';
+        const studentName = document.getElementById('studentName').value || '_________________';
+        const studentId = document.getElementById('studentId').value || '_________________';
+        const batch = document.getElementById('batch').value || '______';
+        const section = document.getElementById('section').value || '______';
+        const submissionDate = document.getElementById('submissionDate').value;
+
+        const deptId = deptSelect.value;
+        let deptFull = '';
+        if (deptId) {
+            const found = allDepartments.find(d => d.id === deptId);
+            deptFull = found ? found.name : '';
+        }
+        const deptDisplay = deptFull || '__________________________________';
+        const formattedDate = formatDate(submissionDate);
+
+        let numberLabel = 'Report No';
+        let topicLabelPreview = 'Topic';
+        if (docType === 'Lab Report') {
+            numberLabel = 'Experiment No';
+            topicLabelPreview = 'Experiment Name';
+        } else if (docType === 'Assignment') {
+            numberLabel = 'Assignment No';
+            topicLabelPreview = 'Assignment Name';
+        }
+
+        const coverHtml = `
+            <div class="preview-container">
+                <div class="preview-header">
+                    <img src="logo.png" alt="NUB logo" class="logo-img">
+                    <div class="header-text">
+                        <h1 class="preview-title">NORTHERN UNIVERSITY BANGLADESH</h1>
+                        <p class="slogan">Knowledge for Innovation and Change</p>
+                        <p class="preview-subtitle">${deptDisplay}</p>
+                    </div>
+                </div>
+                <div class="preview-topic">
+                    <h2 class="preview-topic-title">${docType}</h2>
+                    <div style="border-top:1px solid #ccc; border-bottom:1px solid #ccc; padding:15px 0; margin:20px 0;">
+                        <p style="font-size:18px; font-weight:bold;">Course title: ${courseTitle}; Course code: ${courseCode};</p>
+                        <p style="font-size:16px; margin-top:10px;">${numberLabel}: ${reportNo}</p>
+                    </div>
+                    <p class="preview-topic-text"><strong>${topicLabelPreview}:</strong> “ ${topic} ”</p>
+                </div>
+                <div class="info-grid">
+                    <div class="info-section">
+                        <h3 class="info-title">Submitted To</h3>
+                        <p class="info-item"><span class="info-label">Name</span> ${teacherName}</p>
+                        <p class="info-item"><span class="info-label">Designation</span> ${teacherDesig}</p>
+                        <p class="info-item"><span class="info-label">Department</span> ${teacherDept}</p>
+                    </div>
+                    <div class="info-section">
+                        <h3 class="info-title">Submitted By</h3>
+                        <p class="info-item"><span class="info-label">Name</span> ${studentName}</p>
+                        <p class="info-item"><span class="info-label">ID</span> ${studentId}</p>
+                        <p class="info-item"><span class="info-label">Batch</span> ${batch} | <span class="info-label">Section</span> ${section}</p>
+                    </div>
+                </div>
+                <div class="submit-date">
+                    <span class="info-label">Date of submission:</span> ${formattedDate}
+                </div>
+            </div>
+        `;
+
+        document.getElementById('pdf-content').innerHTML = coverHtml;
+        document.getElementById('previewModal').classList.remove('hidden');
+    };
+
+    window.closePreview = function() {
+        document.getElementById('previewModal').classList.add('hidden');
+    };
+
+    // ONE-CLICK PDF DOWNLOAD – no print dialog
+    window.downloadPDF = function() {
+        const element = document.getElementById('pdf-content');
+        // Optional: set a filename based on course code or doc type
+        const docType = document.getElementById('docType').value;
+        const courseCode = document.getElementById('courseCode').value || 'cover';
+        const filename = `${docType.replace(/\s+/g, '_')}_${courseCode}.pdf`;
+
+        const opt = {
+            margin:        [0.5, 0.5, 0.5, 0.5], // top, right, bottom, left (in inches)
+            filename:      filename,
+            image:         { type: 'jpeg', quality: 0.98 },
+            html2canvas:   { scale: 2, letterRendering: true, useCORS: true },
+            jsPDF:         { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Generate and download PDF directly
+        html2pdf().set(opt).from(element).save();
+    };
+</script>
+</body>
+</html>
